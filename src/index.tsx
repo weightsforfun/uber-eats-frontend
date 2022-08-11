@@ -4,7 +4,8 @@ import ReactDOM from "react-dom/client";
 import { HelmetProvider } from "react-helmet-async";
 import { BrowserRouter } from "react-router-dom";
 import { client } from "./apollo";
-import App from "./App";
+import App from "./components/app";
+
 import reportWebVitals from "./reportWebVitals";
 import "./styles/styles.css";
 const root = ReactDOM.createRoot(
