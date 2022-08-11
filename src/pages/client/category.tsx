@@ -1,32 +1,35 @@
 import { gql, useQuery } from "@apollo/client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Restaurant } from "../../components/restaurant";
 import { CATEGORY_FRAGMENT, RESTAURANT_FRAGMENT } from "../../fragment";
 import {
-  restaurantsPageQuery,
-  restaurantsPageQueryVariables,
-} from "../../__generated__/restaurantsPageQuery";
+  categoryPageQuery,
+  categoryPageQueryVariables,
+} from "../../__generated__/categoryPageQuery";
 
-const RESTAURANTS_QUERY = gql`
-  query restaurantsPageQuery($input: RestaurantsInput!) {
+const CATEGORY_PAGE_QUERY = gql`
+  query categoryPageQuery($input: CategoryInput!) {
+    category(input: $input) {
+      ok
+      error
+      totalPages
+      totalResults
+      restaurants {
+        ...RestaurantParts
+      }
+      category {
+        ...CategoryParts
+      }
+    }
     allCategories {
       ok
       error
       categories {
         ...CategoryParts
-      }
-    }
-    restaurants(input: $input) {
-      ok
-      error
-      totalPages
-      totalResults
-      results {
-        ...RestaurantParts
       }
     }
   }
@@ -38,18 +41,9 @@ interface IFormProps {
   searchTerm: string;
 }
 
-export const Restaurants = () => {
+export const Category = () => {
+  const params = useParams<{ slug: string }>();
   const [page, setPage] = useState(1);
-  const { data, loading, error } = useQuery<
-    restaurantsPageQuery,
-    restaurantsPageQueryVariables
-  >(RESTAURANTS_QUERY, {
-    variables: {
-      input: {
-        page,
-      },
-    },
-  });
   const onNextPageClick = () => setPage((current) => current + 1);
   const onPrevPageClick = () => setPage((current) => current - 1);
   const { register, handleSubmit, getValues } = useForm<IFormProps>();
@@ -61,10 +55,22 @@ export const Restaurants = () => {
       search: `?term=${searchTerm}`,
     });
   };
+  const { data, loading } = useQuery<
+    categoryPageQuery,
+    categoryPageQueryVariables
+  >(CATEGORY_PAGE_QUERY, {
+    variables: {
+      input: {
+        page: 1,
+        slug: params.slug + "",
+      },
+    },
+  });
+  console.log(data);
   return (
     <div>
       <Helmet>
-        <title>Home | Nuber Eats</title>
+        <title>Category | Nuber Eats</title>
       </Helmet>
       <form
         onSubmit={handleSubmit(onSearchSubmit)}
@@ -95,7 +101,7 @@ export const Restaurants = () => {
             ))}
           </div>
           <div className="grid mt-16 md:grid-cols-3 gap-x-5 gap-y-10">
-            {data?.restaurants.results?.map((restaurant) => (
+            {data?.category.restaurants?.map((restaurant) => (
               <Restaurant
                 key={restaurant.id}
                 id={restaurant.id + ""}
@@ -117,9 +123,9 @@ export const Restaurants = () => {
               <div></div>
             )}
             <span>
-              Page {page} of {data?.restaurants.totalPages}
+              Page {page} of {data?.category.totalPages}
             </span>
-            {page !== data?.restaurants.totalPages ? (
+            {page !== data?.category.totalPages ? (
               <button
                 onClick={onNextPageClick}
                 className="focus:outline-none font-medium text-2xl"
