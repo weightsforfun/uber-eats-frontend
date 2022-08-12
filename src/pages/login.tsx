@@ -16,7 +16,7 @@ interface ILoginForm {
   password: string;
 }
 
-const LOGIN_MUTATION = gql`
+export const LOGIN_MUTATION = gql`
   mutation loginMutation($loginInput: LoginInput!) {
     login(input: $loginInput) {
       ok
@@ -32,7 +32,7 @@ export const Login = () => {
     getValues,
     formState: { errors, isValid },
     handleSubmit,
-  } = useForm<ILoginForm>({ mode: "onChange" });
+  } = useForm<ILoginForm>({ mode: "onBlur" });
   const onCompleted = (data: loginMutation) => {
     const {
       login: { error, token, ok },
@@ -61,7 +61,7 @@ export const Login = () => {
   return (
     <div className="h-screen flex items-center flex-col mt-10 lg:mt-28">
       <Helmet>
-        <title>Login / ubereats</title>
+        <title>Login | Uber Eats</title>
       </Helmet>
       <div className="w-full max-w-screen-sm flex flex-col px-5 items-center">
         <img src={uberLogo} className="w-52 mb-10" />
@@ -75,15 +75,16 @@ export const Login = () => {
           <input
             {...register("email", {
               required: "Email is required",
-              pattern:
-                /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
             })}
             placeholder="Email"
-            type={"email"}
+            type="email"
             className="input"
           />
+          {errors.email?.type && (
+            <FormError errorMessage={"Please enter a valid email"}></FormError>
+          )}
           {errors.email?.message && (
-            <FormError errorMessage={errors.email?.message} />
+            <FormError errorMessage={errors.email?.message}></FormError>
           )}
           <input
             {...register("password", {
@@ -91,15 +92,15 @@ export const Login = () => {
               minLength: 3,
             })}
             placeholder="Password"
-            type={"password"}
+            type="password"
             className="input"
           />
           {errors.password?.message && (
             <FormError errorMessage={errors.password?.message} />
           )}
-          {errors.password?.type === "minLength" && (
+          {/* {errors.password?.type === "minLength" && (
             <FormError errorMessage={"passwotd must be more than 10"} />
-          )}
+          )} */}
           <Button canClick={isValid} loading={loading} actionText={"Log in"} />
           {loginMutationResult?.login.error && (
             <FormError errorMessage={loginMutationResult.login.error} />
