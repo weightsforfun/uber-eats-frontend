@@ -1,9 +1,13 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { render } from "@testing-library/react";
 import { HelmetProvider } from "react-helmet-async";
 import { BrowserRouter as Router } from "react-router-dom";
 
-const AllTheProviders: React.FC = ({ children }) => {
+interface BaseLayoutProps {
+  children?: ReactNode;
+}
+
+const AllTheProviders: React.FC<BaseLayoutProps> = ({ children }) => {
   return (
     <HelmetProvider>
       <Router> {children}</Router>

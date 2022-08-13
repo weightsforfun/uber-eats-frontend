@@ -33,7 +33,7 @@ describe("<Header />", () => {
           </Router>
         </MockedProvider>
       );
-      await new Promise((resolve) => setTimeout(resolve, 0));
+      await new Promise((resolve) => setTimeout(resolve, 5));
       getByText("Please verify your email.");
     });
   });
@@ -64,7 +64,7 @@ describe("<Header />", () => {
           </Router>
         </MockedProvider>
       );
-      await new Promise((resolve) => setTimeout(resolve, 0));
+      await new Promise((resolve) => setTimeout(resolve, 5));
       expect(queryByText("Please verify your email.")).toBeNull();
     });
   });

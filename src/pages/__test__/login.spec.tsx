@@ -11,13 +11,13 @@ import { Login, LOGIN_MUTATION } from "../login";
 import { HelmetProvider } from "react-helmet-async";
 import { BrowserRouter as Router } from "react-router-dom";
 import userEvent from "@testing-library/user-event";
+import { act } from "react-dom/test-utils";
 
 describe("<Login />", () => {
   let renderResult: RenderResult;
   let mockedClient: MockApolloClient;
   beforeEach(async () => {
     await waitFor(async () => {
-      //const mockedClient = createMockClient();
       mockedClient = createMockClient();
       renderResult = render(
         <ApolloProvider client={mockedClient}>
@@ -36,33 +36,40 @@ describe("<Login />", () => {
     });
   });
   it("displays email validation errors", async () => {
-    const { getByPlaceholderText, getByRole } = renderResult;
-    const email = getByPlaceholderText(/email/i);
-    await waitFor(async () => {
+    const { getByPlaceholderText, debug, getByRole } = renderResult;
+    let errorMessage;
+    const email = getByPlaceholderText(/Email/i);
+    act(() => {
       userEvent.type(email, "this@wont");
+      waitFor(() => {
+        errorMessage = getByRole("notice");
+        expect(errorMessage).toHaveTextContent(/Please enter a valid email/i);
+      });
     });
-    let errorMessage = getByRole("notice");
-    expect(errorMessage).toHaveTextContent(/Please enter a valid email/i);
-    await waitFor(() => {
+    act(() => {
       userEvent.clear(email);
+      waitFor(() => {
+        errorMessage = getByRole("notice");
+        expect(errorMessage).toHaveTextContent(/Email is required/i);
+      });
     });
-    errorMessage = getByRole("notice");
-    expect(errorMessage).toHaveTextContent(/email is required/i);
   });
   it("display password required errors", async () => {
-    const { getByPlaceholderText, debug, getByRole } = renderResult;
-    const email = getByPlaceholderText(/email/i);
+    const { getByPlaceholderText, getByRole } = renderResult;
+    const email = getByPlaceholderText(/Email/i);
     const submitBtn = getByRole("button");
-    await waitFor(() => {
+    act(() => {
       userEvent.type(email, "this@wont.com");
       userEvent.click(submitBtn);
+      waitFor(() => {
+        const errorMessage = getByRole("notice");
+        expect(errorMessage).toHaveTextContent(/Password is required/i);
+      });
     });
-    const errorMessage = getByRole("notice");
-    expect(errorMessage).toHaveTextContent(/Password is required/i);
   });
 
   it("submits form and calls mutation", async () => {
-    const { getByPlaceholderText, debug, getByRole } = renderResult;
+    const { getByPlaceholderText, getByRole } = renderResult;
     const email = getByPlaceholderText(/email/i);
     const password = getByPlaceholderText(/password/i);
     const submitBtn = getByRole("button");
@@ -75,22 +82,28 @@ describe("<Login />", () => {
         login: {
           ok: true,
           token: "XXX",
-          error: null,
+          error: "mutation-error",
         },
       },
     });
     mockedClient.setRequestHandler(LOGIN_MUTATION, mockedMutationResponse);
-    await waitFor(() => {
+    jest.spyOn(Storage.prototype, "setItem");
+    act(() => {
       userEvent.type(email, formData.email);
       userEvent.type(password, formData.password);
       userEvent.click(submitBtn);
-    });
-    expect(mockedMutationResponse).toHaveBeenCalledTimes(1);
-    expect(mockedMutationResponse).toHaveBeenCalledWith({
-      loginInput: {
-        email: formData.email,
-        password: formData.password,
-      },
+      waitFor(() => {
+        expect(mockedMutationResponse).toHaveBeenCalledTimes(1);
+        expect(mockedMutationResponse).toHaveBeenCalledWith({
+          loginInput: {
+            email: formData.email,
+            password: formData.password,
+          },
+        });
+        const errorMessage = getByRole("notice");
+        expect(errorMessage).toHaveTextContent(/mutation-error/i);
+        expect(localStorage.setItem).toHaveBeenCalledWith("uber-token", "XXX");
+      });
     });
   });
 });

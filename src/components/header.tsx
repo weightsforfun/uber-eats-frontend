@@ -1,12 +1,18 @@
 import { faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { isLoggedInVar } from "../apollo";
 import { useMe } from "../hooks/useMe";
 import nuberLogo from "../images/logo.svg";
 
 export const Header: React.FC = () => {
   const { data } = useMe();
+  const navigate = useNavigate();
+  const logout = () => {
+    isLoggedInVar(false);
+    navigate("/");
+  };
   return (
     <>
       {!data?.me.verified && (
@@ -20,11 +26,16 @@ export const Header: React.FC = () => {
           <Link to="/">
             <img src={nuberLogo} className="w-44" alt="Nuber Eats" />
           </Link>
-          <span className="text-xs">
-            <Link to="/edit-profile">
-              <FontAwesomeIcon icon={faUser} className="text-3xl" />
-            </Link>
-          </span>
+          <div>
+            <span className="text-xs">
+              <Link to="/edit-profile">
+                <FontAwesomeIcon icon={faUser} className="text-3xl" />
+              </Link>
+            </span>
+            <button onClick={logout} className=" mx-2">
+              log out
+            </button>
+          </div>
         </div>
       </header>
     </>

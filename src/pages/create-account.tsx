@@ -67,7 +67,6 @@ export const CreateAccount = () => {
       });
     }
   };
-  console.log(watch());
   return (
     <div className="h-screen flex items-center flex-col mt-10 lg:mt-28">
       <Helmet>

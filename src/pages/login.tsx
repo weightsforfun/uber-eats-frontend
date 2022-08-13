@@ -32,7 +32,7 @@ export const Login = () => {
     getValues,
     formState: { errors, isValid },
     handleSubmit,
-  } = useForm<ILoginForm>({ mode: "onBlur" });
+  } = useForm<ILoginForm>({ mode: "onChange" });
   const onCompleted = (data: loginMutation) => {
     const {
       login: { error, token, ok },
@@ -75,12 +75,15 @@ export const Login = () => {
           <input
             {...register("email", {
               required: "Email is required",
+              pattern:
+                /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
             })}
             placeholder="Email"
-            type="email"
             className="input"
+            required={true}
+            type={"email"}
           />
-          {errors.email?.type && (
+          {errors.email?.type === "pattern" && (
             <FormError errorMessage={"Please enter a valid email"}></FormError>
           )}
           {errors.email?.message && (
@@ -88,11 +91,12 @@ export const Login = () => {
           )}
           <input
             {...register("password", {
-              required: "password is required",
+              required: "Password is required",
               minLength: 3,
             })}
             placeholder="Password"
             type="password"
+            required={true}
             className="input"
           />
           {errors.password?.message && (
