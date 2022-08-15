@@ -31,7 +31,7 @@ interface ICreateAccountForm {
 export const CreateAccount = () => {
   const { register, getValues, formState, handleSubmit, watch } =
     useForm<ICreateAccountForm>({
-      mode: "onBlur",
+      mode: "onChange",
       defaultValues: { role: UserRole.Client },
     });
   const navigate = useNavigate();
