@@ -22,13 +22,7 @@ describe("Create Account", () => {
       if (operationName && operationName === "createAccountMutation") {
         req.reply((res) => {
           res.send({
-            data: {
-              createAccount: {
-                ok: true,
-                error: null,
-                __typename: "CreateAccountOutput",
-              },
-            },
+            fixture: "auth/create-account.json",
           });
         });
       }
@@ -38,10 +32,6 @@ describe("Create Account", () => {
     user.findByPlaceholderText(/password/i).type("123");
     user.findByRole("button").click();
     user.wait(5000);
-    user.title().should("eq", "Login | Uber Eats");
-    user.findByPlaceholderText(/email/i).type("9hcztv@naver.com");
-    user.findByPlaceholderText(/password/i).type("123");
-    user.findByRole("button").click();
-    user.window().its("localStorage.nuber-token").should("be.a", "string");
+    user.login("9hcztv@naver.com", "123");
   });
 });
