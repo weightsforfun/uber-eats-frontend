@@ -1,26 +1,44 @@
 import { gql, useQuery } from "@apollo/client";
 import { Navigate, Route, Router, Routes } from "react-router-dom";
 import { Header } from "../components/header";
+import { Restaurant } from "../components/restaurant";
 import { useMe } from "../hooks/useMe";
 import { NotFound } from "../pages/404";
 import { Category } from "../pages/client/category";
 import { RestaurantLobby } from "../pages/client/restaurantLobby";
 import { Restaurants } from "../pages/client/restaurants";
 import { Search } from "../pages/client/search";
+import { AddRestaurant } from "../pages/owner/add-restaurants";
+import { MyRestaurants } from "../pages/owner/my-restaurants";
 import { ConfirmEmail } from "../user/confirm-email";
 import { EditProfile } from "../user/edit-profile";
 
-const ClientRoutes = [
-  <Route key={1} path="/" element={<Restaurants />}></Route>,
-  <Route key={2} path="/confirm" element={<ConfirmEmail />}></Route>,
-  <Route key={3} path="/edit-profile" element={<EditProfile />}></Route>,
-  <Route key={4} path="/search" element={<Search />}></Route>,
-  <Route key={5} path="/category/:slug" element={<Category />}></Route>,
-  <Route
-    key={6}
-    path="/restaurantLobby/:id"
-    element={<RestaurantLobby />}
-  ></Route>,
+const clientRoutes = [
+  {
+    path: "/",
+    component: <Restaurants />,
+  },
+  {
+    path: "/search",
+    component: <Search />,
+  },
+  {
+    path: "/category/:slug",
+    component: <Category />,
+  },
+  {
+    path: "/restaurants/:id",
+    component: <Restaurants />,
+  },
+];
+const commonRoutes = [
+  { path: "/confirm", component: <ConfirmEmail /> },
+  { path: "/edit-profile", component: <EditProfile /> },
+];
+
+const restaurantRoutes = [
+  { path: "/", component: <MyRestaurants /> },
+  { path: "/add-restaurant", component: <AddRestaurant /> },
 ];
 
 export const LoggedInRouter = () => {
@@ -37,7 +55,29 @@ export const LoggedInRouter = () => {
     <>
       <Header></Header>
       <Routes>
-        {data.me.role === "Client" && ClientRoutes}
+        {data.me.role === "Client" &&
+          clientRoutes.map((route) => (
+            <Route
+              element={route.component}
+              key={route.path}
+              path={route.path}
+            ></Route>
+          ))}
+        {data.me.role === "Owner" &&
+          restaurantRoutes.map((route) => (
+            <Route
+              element={route.component}
+              key={route.path}
+              path={route.path}
+            ></Route>
+          ))}
+        {commonRoutes.map((route) => (
+          <Route
+            element={route.component}
+            key={route.path}
+            path={route.path}
+          ></Route>
+        ))}
         <Route element={<NotFound />}></Route>
       </Routes>
     </>

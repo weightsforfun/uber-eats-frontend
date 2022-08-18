@@ -18,6 +18,13 @@ export interface CategoryInput {
   slug: string;
 }
 
+export interface CreateRestaurantInput {
+  name: string;
+  coverImg: string;
+  address: string;
+  categoryName: string;
+}
+
 export interface CreateUserInput {
   email: string;
   password: string;
