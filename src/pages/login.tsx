@@ -1,16 +1,17 @@
 import { gql, useMutation } from "@apollo/client";
 import { useForm } from "react-hook-form";
 import { FormError } from "../components/form-error";
-import {
-  loginMutation,
-  loginMutationVariables,
-} from "../__generated__/loginMutation";
+
 import uberLogo from "../images/logo.svg";
 import { Button } from "../components/button";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { authTokenVar, isLoggedInVar } from "../apollo";
 import { LOCALSTORAGE_TOKEN } from "../constants";
+import {
+  loginMutation,
+  loginMutationVariables,
+} from "../__generated__/loginMutation";
 interface ILoginForm {
   email: string;
   password: string;
