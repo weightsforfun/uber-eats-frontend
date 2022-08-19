@@ -45,7 +45,7 @@ export interface myRestaurant_myRestaurant_restaurant {
   category: myRestaurant_myRestaurant_restaurant_category | null;
   address: string;
   isPromoted: boolean;
-  menu: myRestaurant_myRestaurant_restaurant_menu[];
+  menu: myRestaurant_myRestaurant_restaurant_menu[] | null;
 }
 
 export interface myRestaurant_myRestaurant {
