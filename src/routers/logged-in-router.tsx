@@ -32,6 +32,10 @@ const clientRoutes = [
     path: "/restaurants/:id",
     component: <Restaurants />,
   },
+  {
+    path: "/restaurantLobby/:id",
+    component: <RestaurantLobby />,
+  },
 ];
 const commonRoutes = [
   { path: "/confirm", component: <ConfirmEmail /> },
